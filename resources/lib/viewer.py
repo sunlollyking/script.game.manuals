@@ -51,9 +51,7 @@ class Viewer(xbmcgui.WindowXMLDialog):
     def show_page(self):
         path = self.paths[self.index]
         self.view.show(*(picture_size(path) or AREA))
-        # Pages are not kept in the texture cache: they are large, and vfs.pdf
-        # keeps the ones read recently
-        self.image.setImage(path, False)
+        self.image.setImage(path)
         self.place()
         self.setProperty("page", localize(32001).format(self.index + 1, len(self.paths)))
 

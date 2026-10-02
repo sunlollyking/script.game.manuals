@@ -90,6 +90,17 @@ def page_paths(manual):
     return [folder + name for name in pages.ordered_pictures(names)]
 
 
+def fetch_with_progress(url, game):
+    from . import fetch
+
+    progress = xbmcgui.DialogProgressBG()
+    progress.create(localize(32000), localize(32007))
+    try:
+        return fetch.download(url, game, lambda share: progress.update(int(share * 100)))
+    finally:
+        progress.close()
+
+
 def run(args):
     from .finder import Finder
     from .viewer import Viewer
@@ -99,6 +110,13 @@ def run(args):
     title = arguments["title"] or manuals.display_title(game)
     if not manual and game:
         manual = locate(game)
+    elif manual.lower().startswith(("http://", "https://")):
+        # A manual known only by where to fetch it - a library may hold one so -
+        # is fetched as a found one would be
+        manual = fetch_with_progress(manual, game)
+        if not manual:
+            xbmcgui.Dialog().notification(localize(32000), localize(32008), xbmcgui.NOTIFICATION_ERROR)
+            return
 
     if not manual:
         if not game:
