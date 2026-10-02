@@ -162,7 +162,13 @@ def find(game_path, exists, listdir):
     return ""
 
 
-def download_target(game_path, existing_folders):
+def fetched_extension(url):
+    """The extension a manual fetched from this address is saved with."""
+    extension = extension_of(url.split("?", 1)[0].split("#", 1)[0])
+    return extension if extension in EXTENSIONS else ".pdf"
+
+
+def download_target(game_path, existing_folders, extension=".pdf"):
     """Where a fetched manual for this game is written, or "" if nowhere beside it.
 
     The "manuals" folder beside the game, which the lookup already searches, so
@@ -173,4 +179,4 @@ def download_target(game_path, existing_folders):
         return ""
     folder = folder_of(game_path)
     sub = next((s for s in SUBFOLDERS if s in existing_folders), SUBFOLDERS[0])
-    return join(join(folder, sub), stem_of(game_path) + ".pdf")
+    return join(join(folder, sub), stem_of(game_path) + extension)

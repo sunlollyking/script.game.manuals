@@ -71,8 +71,11 @@ def locate(game):
     found = manuals.find(game, xbmcvfs.exists, files_in)
     if found:
         return found
-    kept = manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + ".pdf")
-    return kept if xbmcvfs.exists(kept) else ""
+    for extension in manuals.EXTENSIONS:
+        kept = manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + extension)
+        if xbmcvfs.exists(kept):
+            return kept
+    return ""
 
 
 def page_paths(manual):
@@ -108,12 +111,15 @@ def run(args):
     arguments = manuals.parse_args(args)
     game, manual = arguments["game"], arguments["manual"]
     title = arguments["title"] or manuals.display_title(game)
+    # A library may know a manual only by where to fetch it. One already on
+    # disk is read instead, so it is fetched once rather than on every visit.
+    address = ""
+    if manual.lower().startswith(("http://", "https://")):
+        address, manual = manual, ""
     if not manual and game:
         manual = locate(game)
-    elif manual.lower().startswith(("http://", "https://")):
-        # A manual known only by where to fetch it - a library may hold one so -
-        # is fetched as a found one would be
-        manual = fetch_with_progress(manual, game)
+    if not manual and address:
+        manual = fetch_with_progress(address, game)
         if not manual:
             xbmcgui.Dialog().notification(localize(32000), localize(32008), xbmcgui.NOTIFICATION_ERROR)
             return

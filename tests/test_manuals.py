@@ -135,6 +135,22 @@ class DownloadTarget(unittest.TestCase):
     def test_nowhere_for_a_game_without_a_folder(self):
         self.assertEqual(manuals.download_target("plugin://x/y", set()), "")
 
+    def test_a_comic_archive_keeps_its_extension(self):
+        self.assertEqual(manuals.download_target(GAME, set(), ".cbz"),
+                         "/games/Mega Drive/manuals/Sonic The Hedgehog 2 (World) (Rev A).cbz")
+
+
+class FetchedExtension(unittest.TestCase):
+    def test_the_address_names_the_format(self):
+        self.assertEqual(manuals.fetched_extension("https://h/m/Sonic.CBZ"), ".cbz")
+
+    def test_a_query_is_not_part_of_the_name(self):
+        self.assertEqual(manuals.fetched_extension("https://h/get.cbr?id=1&f=x.zip"), ".cbr")
+
+    def test_anything_else_is_taken_for_a_pdf(self):
+        self.assertEqual(manuals.fetched_extension("https://h/download?id=12"), ".pdf")
+        self.assertEqual(manuals.fetched_extension("https://h/m/manual.zip"), ".pdf")
+
 
 if __name__ == "__main__":
     unittest.main()

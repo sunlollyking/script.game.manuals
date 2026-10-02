@@ -12,18 +12,18 @@ from .main import PROFILE_MANUALS, downloads, log
 CHUNK = 256 * 1024
 
 
-def target_for(game):
+def target_for(game, extension):
     """Beside the game if that can be written to, otherwise in the profile."""
     folder = manuals.folder_of(game)
     existing = set(xbmcvfs.listdir(folder)[0]) if xbmcvfs.exists(folder) else set()
-    beside = manuals.download_target(game, existing)
+    beside = manuals.download_target(game, existing, extension)
     if beside:
         folder = manuals.folder_of(beside)
         if xbmcvfs.exists(folder) or xbmcvfs.mkdirs(folder):
             return beside
         log("\"%s\" can't be written to; keeping the manual in the profile" % folder)
     xbmcvfs.mkdirs(PROFILE_MANUALS)
-    return manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + ".pdf")
+    return manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + extension)
 
 
 def download(url, game, progress):
@@ -33,7 +33,7 @@ def download(url, game, progress):
     written under another name until it is whole, so a failed download never
     leaves something that looks like a manual.
     """
-    target = target_for(game)
+    target = target_for(game, manuals.fetched_extension(url))
     partial = target + ".part"
     copied = 0
     done = False
