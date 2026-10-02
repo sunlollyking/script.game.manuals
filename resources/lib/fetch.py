@@ -7,9 +7,26 @@ import xbmc
 import xbmcvfs
 
 from . import manuals
-from .main import PROFILE_MANUALS, downloads, log
+from .main import ADDON_ID, PROFILE_MANUALS, downloads, log
 
 CHUNK = 256 * 1024
+
+
+def writable(folder):
+    """Whether a file can be written in a folder, making the folder if needed.
+
+    Tried rather than asked: Kodi answers whether a folder exists from its
+    listing of the folder above, which can predate the folder being made.
+    """
+    xbmcvfs.mkdirs(folder)
+    probe = manuals.join(folder, ".%s.part" % ADDON_ID)
+    f = xbmcvfs.File(probe, "w")
+    try:
+        written = f.write(b"-")
+    finally:
+        f.close()
+    xbmcvfs.delete(probe)
+    return bool(written)
 
 
 def target_for(game, extension):
@@ -19,7 +36,7 @@ def target_for(game, extension):
     beside = manuals.download_target(game, existing, extension)
     if beside:
         folder = manuals.folder_of(beside)
-        if xbmcvfs.exists(folder) or xbmcvfs.mkdirs(folder):
+        if writable(folder):
             return beside
         log("\"%s\" can't be written to; keeping the manual in the profile" % folder)
     xbmcvfs.mkdirs(PROFILE_MANUALS)
