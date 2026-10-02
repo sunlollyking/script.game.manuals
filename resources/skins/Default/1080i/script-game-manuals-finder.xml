@@ -118,14 +118,31 @@
 				<height>600</height>
 				<visible>!String.IsEqual(Window.Property(state),results) + !String.IsEqual(Window.Property(state),downloading)</visible>
 				<animation effect="fade" time="200">Visible</animation>
-				<control type="image">
-					<left>752</left>
-					<top>170</top>
-					<width>96</width>
-					<height>96</height>
-					<texture colordiffuse="FF12A0C7">spinner.png</texture>
-					<animation effect="rotate" end="-360" center="auto" time="1100" loop="true" reversible="false" condition="true">Conditional</animation>
+				<!-- Estuary's busy spinner: its two images and their animations -->
+				<control type="group">
+					<left>760</left>
+					<top>180</top>
+					<width>80</width>
+					<height>80</height>
 					<visible>String.IsEqual(Window.Property(state),searching)</visible>
+					<control type="image">
+						<centerleft>50%</centerleft>
+						<centertop>50%</centertop>
+						<width>80</width>
+						<height>80</height>
+						<aspectratio>keep</aspectratio>
+						<animation effect="rotate" end="-45" center="auto" time="200" delay="600" loop="true" reversible="false" condition="true">Conditional</animation>
+						<texture colordiffuse="FF12A0C7">spinner.png</texture>
+					</control>
+					<control type="image">
+						<centerleft>50%</centerleft>
+						<centertop>50%</centertop>
+						<width>50</width>
+						<height>50</height>
+						<aspectratio>keep</aspectratio>
+						<animation effect="rotate" end="45" center="auto" time="200" delay="600" loop="true" reversible="false" condition="true">Conditional</animation>
+						<texture flipx="true" colordiffuse="FF12A0C7">spinner.png</texture>
+					</control>
 				</control>
 				<control type="image">
 					<left>720</left>
