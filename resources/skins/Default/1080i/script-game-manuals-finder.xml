@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">200</defaultcontrol>
+	<coordinates>
+		<left>360</left>
+		<top>140</top>
+	</coordinates>
+	<animation effect="fade" time="200">WindowOpen</animation>
+	<animation effect="fade" time="200">WindowClose</animation>
+	<controls>
+		<control type="image">
+			<width>1200</width>
+			<height>800</height>
+			<texture colordiffuse="F0151A1E">white.png</texture>
+		</control>
+		<control type="image">
+			<width>1200</width>
+			<height>90</height>
+			<texture colordiffuse="FF12A0C7">white.png</texture>
+		</control>
+		<control type="label">
+			<left>40</left>
+			<width>1120</width>
+			<height>90</height>
+			<font>font13</font>
+			<aligny>center</aligny>
+			<label>$ADDON[script.game.manuals 32002]$INFO[Window.Property(game), - ]</label>
+		</control>
+		<control type="label">
+			<left>40</left>
+			<top>110</top>
+			<width>1120</width>
+			<height>40</height>
+			<font>font12</font>
+			<textcolor>FFAAAAAA</textcolor>
+			<label>$ADDON[script.game.manuals 32010]</label>
+			<visible>String.IsEmpty(Window.Property(status))</visible>
+		</control>
+		<control type="label">
+			<left>40</left>
+			<top>110</top>
+			<width>1120</width>
+			<height>400</height>
+			<font>font13</font>
+			<align>center</align>
+			<aligny>center</aligny>
+			<label>$INFO[Window.Property(status)]</label>
+			<visible>!String.IsEmpty(Window.Property(status))</visible>
+		</control>
+		<control type="list" id="200">
+			<left>40</left>
+			<top>160</top>
+			<width>1120</width>
+			<height>480</height>
+			<onup>200</onup>
+			<ondown>300</ondown>
+			<scrolltime>200</scrolltime>
+			<itemlayout height="96" width="1120">
+				<control type="image">
+					<left>10</left>
+					<top>8</top>
+					<width>80</width>
+					<height>80</height>
+					<aspectratio>keep</aspectratio>
+					<texture>$INFO[ListItem.Art(thumb)]</texture>
+				</control>
+				<control type="label">
+					<left>110</left>
+					<width>990</width>
+					<height>96</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<label>$INFO[ListItem.Label]</label>
+				</control>
+			</itemlayout>
+			<focusedlayout height="96" width="1120">
+				<control type="image">
+					<width>1120</width>
+					<height>96</height>
+					<texture colordiffuse="FF12A0C7">white.png</texture>
+					<visible>Control.HasFocus(200)</visible>
+				</control>
+				<control type="image">
+					<left>10</left>
+					<top>8</top>
+					<width>80</width>
+					<height>80</height>
+					<aspectratio>keep</aspectratio>
+					<texture>$INFO[ListItem.Art(thumb)]</texture>
+				</control>
+				<control type="label">
+					<left>110</left>
+					<width>990</width>
+					<height>96</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<label>$INFO[ListItem.Label]</label>
+				</control>
+			</focusedlayout>
+		</control>
+		<control type="grouplist">
+			<left>40</left>
+			<top>680</top>
+			<width>1120</width>
+			<height>80</height>
+			<orientation>horizontal</orientation>
+			<itemgap>20</itemgap>
+			<onup>200</onup>
+			<control type="button" id="300">
+				<width>600</width>
+				<height>80</height>
+				<font>font12</font>
+				<label>$ADDON[script.game.manuals 32009]: $INFO[Window.Property(provider)]</label>
+				<texturefocus colordiffuse="FF12A0C7">white.png</texturefocus>
+				<texturenofocus colordiffuse="FF2A3036">white.png</texturenofocus>
+				<align>center</align>
+				<aligny>center</aligny>
+				<visible>!String.IsEmpty(Window.Property(provider))</visible>
+			</control>
+			<control type="button" id="310">
+				<width>400</width>
+				<height>80</height>
+				<font>font12</font>
+				<label>$ADDON[script.game.manuals 32006]</label>
+				<texturefocus colordiffuse="FF12A0C7">white.png</texturefocus>
+				<texturenofocus colordiffuse="FF2A3036">white.png</texturenofocus>
+				<align>center</align>
+				<aligny>center</aligny>
+			</control>
+		</control>
+	</controls>
+</window>
