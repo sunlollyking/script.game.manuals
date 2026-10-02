@@ -52,9 +52,21 @@ Each manual reopens at the page it was left on.
 ## Skins
 
 The windows are `script-game-manuals-viewer.xml` and
-`script-game-manuals-finder.xml`. A skin can provide its own; the viewer's page
-is image control 100, which the add-on moves and resizes, and it publishes
+`script-game-manuals-finder.xml`. A skin can provide its own.
+
+The viewer's page is image control 100. Its position and size in the skin are
+the area the page is fitted to and moved around in; the add-on then moves and
+resizes the control itself. It publishes `Window.Property(title)`,
 `Window.Property(page)` and `Window.Property(zoomed)`.
+
+The finder's results are list 200, and its buttons are 300 (ask the next
+provider, worth showing when `Window.Property(providers)` is more than 1), 310
+(get more providers) and 320 (cancel). It publishes `Window.Property(state)` -
+`searching`, `results`, `empty`, `noproviders`, `downloading` or `failed` -
+along with `game`, `provider`, `provider.icon`, `status`, `hint` and
+`progress`. Images 400 and 410 are an optional download bar: the add-on sizes
+410 to a share of 400's width. Each result carries the provider's `manual.*`
+properties.
 
 ## Tests
 

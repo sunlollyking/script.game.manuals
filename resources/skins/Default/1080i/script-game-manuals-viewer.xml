@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The page is control 100. The add-on moves and resizes it to zoom and pan,
-     so it is given no size of its own beyond the screen. -->
+<!-- The page is control 100. Its size here is the area the page is fitted to;
+     the add-on then moves and resizes it to zoom and pan. -->
 <window>
 	<coordinates>
 		<left>0</left>

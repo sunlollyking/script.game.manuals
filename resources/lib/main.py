@@ -147,6 +147,6 @@ def run(args):
 
     store = positions.Positions(POSITIONS, read_text, write_text)
     viewer = Viewer("script-game-manuals-viewer.xml", ADDON_PATH, "Default", "1080i",
-                    manual=manual, pages=paths, positions=store)
+                    manual=manual, title=title, pages=paths, positions=store)
     viewer.doModal()
     del viewer

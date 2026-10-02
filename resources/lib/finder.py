@@ -115,9 +115,13 @@ class Finder(xbmcgui.WindowXMLDialog):
             self.close()
 
     def show_progress(self, done):
-        track = self.getControl(BAR_TRACK).getWidth()
-        self.getControl(BAR_FILL).setWidth(max(12, int(track * done)))
         self.setProperty("progress", "%d%%" % int(done * 100))
+        try:
+            track = self.getControl(BAR_TRACK).getWidth()
+            self.getControl(BAR_FILL).setWidth(max(12, int(track * done)))
+        except RuntimeError:
+            # A skin's own window may show the progress as text alone
+            pass
 
     def download(self, url):
         self.busy = True

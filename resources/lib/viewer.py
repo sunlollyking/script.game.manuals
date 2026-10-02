@@ -13,7 +13,7 @@ from . import pages, view
 from .main import localize
 
 PAGE = 100
-#: The area the page is shown in, in the skin's 1080p coordinates
+#: The area a page is shown in when the skin gives control 100 no size
 AREA = (1920, 1080)
 #: Enough of a picture to reach its size, past a JPEG's metadata
 HEADER_BYTES = 65536
@@ -38,26 +38,37 @@ class Viewer(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         super(Viewer, self).__init__(*args)
         self.manual = kwargs["manual"]
+        self.title = kwargs.get("title", "")
         self.paths = kwargs["pages"]
         self.positions = kwargs["positions"]
         self.index = min(self.positions.page(self.manual), len(self.paths) - 1)
-        self.view = view.View(*AREA)
+        self.view = None
         self.image = None
+        self.origin = (0, 0)
 
     def onInit(self):
+        self.setProperty("title", self.title)
         self.image = self.getControl(PAGE)
+        # Where the skin puts control 100 is the area the page is fitted to,
+        # which leaves a skin room for anything it shows around the page
+        area = (self.image.getWidth(), self.image.getHeight())
+        if min(area) > 0:
+            self.origin = (self.image.getX(), self.image.getY())
+        else:
+            area = AREA
+        self.view = view.View(*area)
         self.show_page()
 
     def show_page(self):
         path = self.paths[self.index]
-        self.view.show(*(picture_size(path) or AREA))
+        self.view.show(*(picture_size(path) or self.view.area))
         self.image.setImage(path)
         self.place()
         self.setProperty("page", localize(32001).format(self.index + 1, len(self.paths)))
 
     def place(self):
         x, y, width, height = self.view.rect()
-        self.image.setPosition(x, y)
+        self.image.setPosition(self.origin[0] + x, self.origin[1] + y)
         self.image.setWidth(width)
         self.image.setHeight(height)
         self.setProperty("zoomed", "" if self.view.is_whole else "true")
