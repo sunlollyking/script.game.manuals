@@ -10,14 +10,15 @@ it was left.
 import xbmcgui
 import xbmcvfs
 
-from . import pages, view
-from .main import localize
+from . import manuals, pages, view
+from .main import ADDON_ID, localize
 
 PAGE = 100
 #: The area a page is shown in when the skin gives control 100 no size
 AREA = (1920, 1080)
-#: Enough of a picture to reach its size, past a JPEG's metadata
-HEADER_BYTES = 65536
+#: Kodi shows pictures from here as they are, rather than through its thumbnail
+#: cache, which would keep every page read at a fraction of its resolution
+SHOWN = "special://temp/%s/" % ADDON_ID
 
 LEFT, RIGHT, UP, DOWN = 1, 2, 3, 4
 PAGE_UP, PAGE_DOWN, NEXT_ITEM, PREV_ITEM = 5, 6, 14, 15
@@ -27,10 +28,10 @@ ZOOM_OUT, ZOOM_IN = 30, 31
 WHEEL_UP, WHEEL_DOWN, SCROLL_UP, SCROLL_DOWN = 104, 105, 111, 112
 
 
-def picture_size(path):
+def read(path):
     f = xbmcvfs.File(path)
     try:
-        return pages.picture_size(bytes(f.readBytes(HEADER_BYTES)))
+        return bytes(f.readBytes())
     finally:
         f.close()
 
@@ -46,6 +47,9 @@ class Viewer(xbmcgui.WindowXMLDialog):
         self.view = None
         self.image = None
         self.origin = (0, 0)
+        self.picture = b""
+        self.shown = ""
+        self.written = set()
 
     def onInit(self):
         self.setProperty("title", self.title)
@@ -58,12 +62,13 @@ class Viewer(xbmcgui.WindowXMLDialog):
         else:
             area = AREA
         self.view = view.View(*area)
+        xbmcvfs.mkdirs(SHOWN)
         self.show_page()
 
     def show_page(self):
         path = self.paths[self.index]
-        self.view.show(*(picture_size(path) or self.view.area))
-        self.image.setImage(path)
+        self.picture = read(path)
+        self.view.show(*(pages.picture_size(self.picture) or self.view.area))
         self.place()
         self.setProperty("page", localize(32001).format(self.index + 1, len(self.paths)))
 
@@ -73,6 +78,27 @@ class Viewer(xbmcgui.WindowXMLDialog):
         self.image.setWidth(width)
         self.image.setHeight(height)
         self.setProperty("zoomed", "" if self.view.is_whole else "true")
+        self.load()
+
+    def load(self):
+        """Give the page a file of its own for each zoom, so that Kodi loads it
+        again at the size it is now shown rather than stretching a smaller one."""
+        extension = manuals.extension_of(self.paths[self.index])
+        name = "%s%04d-%d%s" % (SHOWN, self.index, self.view.zoom, extension)
+        if name == self.shown:
+            return
+        if name not in self.written:
+            with xbmcvfs.File(name, "w") as f:
+                f.write(self.picture)
+            self.written.add(name)
+        self.image.setImage(name, False)
+        self.shown = name
+
+    def close(self):
+        super(Viewer, self).close()
+        for name in self.written:
+            xbmcvfs.delete(name)
+        self.written.clear()
 
     def turn(self, pages_on):
         index = min(max(self.index + pages_on, 0), len(self.paths) - 1)
