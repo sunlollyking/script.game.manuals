@@ -14,8 +14,8 @@ from lib import pages  # noqa: E402
 
 class PagesFolder(unittest.TestCase):
     def test_a_pdf_opens_through_vfs_pdf_as_kodi_names_it(self):
-        self.assertEqual(pages.pages_folder("/home/chris/manuals/Super Mario Bros. (USA, Europe).pdf"),
-                         "pdf://%2fhome%2fchris%2fmanuals%2fSuper%20Mario%20Bros.%20(USA%2c%20Europe).pdf/")
+        self.assertEqual(pages.pages_folder("/games/manuals/Super Mario Bros. (USA, Europe).pdf"),
+                         "pdf://%2fgames%2fmanuals%2fSuper%20Mario%20Bros.%20(USA%2c%20Europe).pdf/")
 
     def test_comic_archives_open_through_zip_and_rar(self):
         self.assertTrue(pages.pages_folder("/m/a.CBZ").startswith("zip://%2fm%2fa.CBZ"))
