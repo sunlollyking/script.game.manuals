@@ -110,7 +110,7 @@ def run(args):
 
     arguments = manuals.parse_args(args)
     game, manual = arguments["game"], arguments["manual"]
-    title = arguments["title"] or manuals.display_title(game)
+    title = manuals.title_for(game, arguments["title"])
     # A library may know a manual only by where to fetch it. One already on
     # disk is read instead, so it is fetched once rather than on every visit.
     address = ""

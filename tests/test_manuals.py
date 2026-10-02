@@ -110,6 +110,18 @@ class DisplayTitle(unittest.TestCase):
         self.assertEqual(manuals.display_title("/g/(Proto).nes"), "(Proto)")
 
 
+class TitleFor(unittest.TestCase):
+    def test_a_library_title_is_kept(self):
+        self.assertEqual(manuals.title_for("/g/smb (USA).nes", "Super Mario Bros."), "Super Mario Bros.")
+
+    def test_the_file_name_is_tidied(self):
+        self.assertEqual(manuals.title_for("/g/Zelda (Europe).nes", "Zelda (Europe).nes"), "Zelda")
+        self.assertEqual(manuals.title_for("/g/Zelda (Europe).nes", "Zelda (Europe)"), "Zelda")
+
+    def test_no_title_comes_from_the_file(self):
+        self.assertEqual(manuals.title_for("/g/Zelda (Europe).nes", ""), "Zelda")
+
+
 class ParseArgs(unittest.TestCase):
     def test_named_arguments(self):
         self.assertEqual(manuals.parse_args(["game=/g/a, b (USA).nes", "title=A, B", "manual=/m/a.pdf"]),

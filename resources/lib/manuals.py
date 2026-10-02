@@ -104,6 +104,17 @@ def display_title(game_path):
     return title or stem
 
 
+def title_for(game_path, given):
+    """The title to show for a game, preferring the one a caller passed.
+
+    Kodi gives a game outside a library its file name as its title, which
+    reads better with its tags taken off.
+    """
+    if given and given not in (name_of(game_path), stem_of(game_path)):
+        return given
+    return display_title(game_path)
+
+
 def parse_args(args):
     """RunScript's arguments: game=, title= and manual=, or the game then the manual bare.
 
