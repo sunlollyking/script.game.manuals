@@ -84,6 +84,45 @@ def normalise(name):
     return " ".join(re.findall(r"[0-9a-z]+", "".join(kept).lower()))
 
 
+def display_title(game_path):
+    """A game's name as a person would write it, from its file name.
+
+    The file's bracketed tags go, so "Super Mario Bros. (USA, Europe).nes"
+    reads "Super Mario Bros.".
+    """
+    stem = stem_of(game_path)
+    depth = 0
+    kept = []
+    for c in stem:
+        if c in "([":
+            depth += 1
+        elif c in ")]":
+            depth = max(depth - 1, 0)
+        elif depth == 0:
+            kept.append(c)
+    title = " ".join("".join(kept).split()).strip(" -_,")
+    return title or stem
+
+
+def parse_args(args):
+    """RunScript's arguments: game=, title= and manual=, or the game then the manual bare.
+
+    Kodi's $ESCINFO[] quotes a value as name="value", which survives commas and
+    brackets in a game's name, and Kodi hands it over unquoted.
+    """
+    named = {"game": "", "title": "", "manual": ""}
+    bare = []
+    for arg in args:
+        key, sep, value = arg.partition("=")
+        if sep and key in named:
+            named[key] = value
+        elif arg:
+            bare.append(arg)
+    for key, value in zip(("game", "manual"), bare):
+        named[key] = named[key] or value
+    return named
+
+
 def folders_for(game_path):
     """The folders a game's manual may be in, best first."""
     folder = folder_of(game_path)

@@ -45,13 +45,14 @@ class Finder(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         super(Finder, self).__init__(*args)
         self.game = kwargs["game"]
+        self.title = kwargs["title"]
         self.downloaded = ""
         self.providers = []
         self.provider = 0
         self.busy = False
 
     def onInit(self):
-        self.setProperty("game", manuals.stem_of(self.game))
+        self.setProperty("game", self.title)
         self.providers = find_providers()
         self.setProperty("providers", str(len(self.providers)))
         if not self.providers:
@@ -74,7 +75,7 @@ class Finder(xbmcgui.WindowXMLDialog):
         threading.Thread(target=self._search, args=(addon_id,)).start()
 
     def _search(self, addon_id):
-        answer = jsonrpc("Files.GetDirectory", {"directory": providers.search_url(addon_id, self.game),
+        answer = jsonrpc("Files.GetDirectory", {"directory": providers.search_url(addon_id, self.game, self.title),
                                                 "media": "files",
                                                 "properties": ["title", "art", "customproperties"]})
         items = []

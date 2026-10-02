@@ -100,6 +100,28 @@ class Find(unittest.TestCase):
         self.assertEqual(manuals.find(GAME, *disk()), "")
 
 
+class DisplayTitle(unittest.TestCase):
+    def test_the_tags_go(self):
+        self.assertEqual(manuals.display_title("/g/Super Mario Bros. (USA, Europe).nes"), "Super Mario Bros.")
+        self.assertEqual(manuals.display_title("/g/Zelda (Europe) [!].nes"), "Zelda")
+
+    def test_a_name_that_is_all_tags_is_kept(self):
+        self.assertEqual(manuals.display_title("/g/(Proto).nes"), "(Proto)")
+
+
+class ParseArgs(unittest.TestCase):
+    def test_named_arguments(self):
+        self.assertEqual(manuals.parse_args(["game=/g/a, b (USA).nes", "title=A, B", "manual=/m/a.pdf"]),
+                         {"game": "/g/a, b (USA).nes", "title": "A, B", "manual": "/m/a.pdf"})
+
+    def test_bare_arguments_are_the_game_then_the_manual(self):
+        self.assertEqual(manuals.parse_args(["/g/a.nes", "/m/a.pdf"]),
+                         {"game": "/g/a.nes", "title": "", "manual": "/m/a.pdf"})
+
+    def test_an_empty_value_is_nothing(self):
+        self.assertEqual(manuals.parse_args(["game=/g/a.nes", "title="])["title"], "")
+
+
 class DownloadTarget(unittest.TestCase):
     def test_the_manuals_folder_beside_the_game(self):
         self.assertEqual(manuals.download_target(GAME, set()),

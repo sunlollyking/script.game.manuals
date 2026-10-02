@@ -5,4 +5,5 @@ import sys
 
 from resources.lib import main
 
-main.run([sys.listitem.getPath()])
+# A library listing labels a game with the library's title
+main.run(["game=" + sys.listitem.getPath(), "title=" + sys.listitem.getLabel()])

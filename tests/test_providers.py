@@ -43,7 +43,11 @@ class SearchUrl(unittest.TestCase):
         self.assertEqual((parts.scheme, parts.netloc), ("plugin", "service.manuals.regvault"))
         self.assertEqual(parse_qs(parts.query), {"action": ["search"],
                                                  "path": ["/games/Super Mario Bros. (USA, Europe).nes"],
-                                                 "title": ["Super Mario Bros. (USA, Europe)"]})
+                                                 "title": ["Super Mario Bros."]})
+
+    def test_a_title_given_is_the_hint(self):
+        url = providers.search_url("p", "/g/smb.nes", "Super Mario Bros.")
+        self.assertEqual(parse_qs(urlsplit(url).query)["title"], ["Super Mario Bros."])
 
 
 if __name__ == "__main__":

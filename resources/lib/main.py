@@ -81,15 +81,17 @@ def run(args):
     from .finder import Finder
     from .viewer import Viewer
 
-    game = args[0] if args else ""
-    manual = args[1] if len(args) > 1 else ""
+    arguments = manuals.parse_args(args)
+    game, manual = arguments["game"], arguments["manual"]
+    title = arguments["title"] or manuals.display_title(game)
     if not manual and game:
         manual = locate(game)
 
     if not manual:
         if not game:
             return
-        finder = Finder("script-game-manuals-finder.xml", ADDON_PATH, "Default", "1080i", game=game)
+        finder = Finder("script-game-manuals-finder.xml", ADDON_PATH, "Default", "1080i", game=game,
+                        title=title)
         finder.doModal()
         manual = finder.downloaded
         del finder

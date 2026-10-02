@@ -2,10 +2,16 @@
 
 Shows the manual that came with a game, and finds one for a game that has none.
 
-    RunScript(script.game.manuals, <game path>[, <manual path>])
+    RunScript(script.game.manuals,game=<path>[,title=<name>][,manual=<path>])
 
-A skin calls it from its game OSD or info screen; it also adds **Manual** to a
-game's context menu.
+A skin calls it from its game OSD or info screen, passing what it knows with
+`$ESCINFO[]` so commas and brackets in a name survive:
+
+    RunScript(script.game.manuals,game=$ESCINFO[Player.FilenameAndPath],title=$ESCINFO[Player.Title])
+
+The title is what the game is called on screen, and a hint for providers;
+without one it comes from the file name, tags removed. It also adds **Manual**
+to a game's context menu, titled with the item's label.
 
 ## Where manuals are found
 
