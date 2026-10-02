@@ -40,7 +40,8 @@ class Candidates(unittest.TestCase):
         self.assertEqual(manuals.exact_candidates("/g/Dr. Mario.nes")[0], "/g/Dr. Mario.pdf")
 
     def test_network_paths_work(self):
-        self.assertEqual(manuals.exact_candidates("smb://box/games/Zelda.nes")[0], "smb://box/games/Zelda.pdf")
+        self.assertEqual(manuals.exact_candidates("smb://box/games/Zelda.nes")[0],
+                         "smb://box/games/Zelda.pdf")
 
     def test_some_games_have_nowhere_for_a_manual(self):
         for path in ("", "/games/README", "zip://%2fgames%2fa.zip/game.nes", "plugin://x/y"):

@@ -1,0 +1,30 @@
+name: Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: script.game.manuals
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the tools
+        run: pip install pytest pyflakes pycodestyle kodi-addon-checker
+      - name: Tests
+        working-directory: script.game.manuals
+        run: python -m pytest tests
+      - name: Lint
+        working-directory: script.game.manuals
+        run: |
+          python -m pyflakes default.py context.py resources/lib tests
+          python -m pycodestyle --max-line-length=110 default.py context.py resources/lib tests
+      - name: Kodi add-on checker
+        run: |
+          rm -rf script.game.manuals/.git script.game.manuals/.github script.game.manuals/.gitignore
+          kodi-addon-checker --branch piers --PR --skip-dependency-checks script.game.manuals

@@ -18,9 +18,11 @@
     <description lang="en_GB">Shows the manual that came with a game, from the game's own folder, and finds one for a game that has none through add-ons that know where manuals are. Pages can be zoomed and panned, and each manual reopens where it was left.</description>
     <platform>all</platform>
     <license>GPL-2.0-or-later</license>
+    <news>v0.1.0 (2026-10-02)[CR]- First release: shows a game's manual, and finds one through manual providers.</news>
     <source>https://github.com/sunlollyking/script.game.manuals</source>
     <assets>
       <icon>resources/icon.png</icon>
+      <fanart>resources/fanart.jpg</fanart>
     </assets>
   </extension>
 </addon>

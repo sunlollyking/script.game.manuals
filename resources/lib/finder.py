@@ -7,13 +7,14 @@ folder can't be written to, and the viewer then opens it.
 """
 
 import threading
+import time
 
 import xbmc
 import xbmcgui
 import xbmcvfs
 
 from . import manuals, providers
-from .main import PROFILE_MANUALS, jsonrpc, localize, log
+from .main import PROFILE_MANUALS, downloads, jsonrpc, localize, log
 
 RESULTS = 200
 PROVIDER = 300
@@ -37,7 +38,8 @@ def find_providers():
         except Exception:
             continue
         if providers.provides_manuals(text):
-            found.append((addon["addonid"], addon.get("name") or addon["addonid"], addon.get("thumbnail") or ""))
+            addon_id = addon["addonid"]
+            found.append((addon_id, addon.get("name") or addon_id, addon.get("thumbnail") or ""))
     return found
 
 
@@ -75,8 +77,8 @@ class Finder(xbmcgui.WindowXMLDialog):
         threading.Thread(target=self._search, args=(addon_id,)).start()
 
     def _search(self, addon_id):
-        answer = jsonrpc("Files.GetDirectory", {"directory": providers.search_url(addon_id, self.game, self.title),
-                                                "media": "files",
+        url = providers.search_url(addon_id, self.game, self.title)
+        answer = jsonrpc("Files.GetDirectory", {"directory": url, "media": "files",
                                                 "properties": ["title", "art", "customproperties"]})
         items = []
         for result in answer.get("files") or []:
@@ -163,6 +165,7 @@ class Finder(xbmcgui.WindowXMLDialog):
             self.setFocusId(CANCEL)
             return
         self.show_progress(1)
+        downloads().add(target, copied, time.time())
         log("Fetched a manual to \"%s\"" % target)
         self.downloaded = target
         self.close()

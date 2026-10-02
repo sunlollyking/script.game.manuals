@@ -119,3 +119,35 @@ msgstr ""
 msgctxt "#32025"
 msgid "Check the connection and try again"
 msgstr ""
+
+msgctxt "#32030"
+msgid "Downloaded manuals"
+msgstr ""
+
+msgctxt "#32031"
+msgid "Space for downloaded manuals"
+msgstr ""
+
+msgctxt "#32032"
+msgid "Manuals this add-on downloads are deleted, least recently read first, to stay within this. Manuals you put beside your games yourself are never deleted."
+msgstr ""
+
+msgctxt "#32033"
+msgid "100 MB"
+msgstr ""
+
+msgctxt "#32034"
+msgid "250 MB"
+msgstr ""
+
+msgctxt "#32035"
+msgid "500 MB"
+msgstr ""
+
+msgctxt "#32036"
+msgid "1 GB"
+msgstr ""
+
+msgctxt "#32037"
+msgid "2 GB"
+msgstr ""

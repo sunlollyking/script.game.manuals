@@ -2,13 +2,14 @@
 """Show a game's manual, finding one first if the game has none."""
 
 import json
+import time
 
 import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import manuals, pages, positions
+from . import budget, manuals, pages, positions
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo("id")
@@ -16,6 +17,7 @@ ADDON_PATH = ADDON.getAddonInfo("path")
 #: Where a manual goes when there is nowhere beside the game to put it
 PROFILE_MANUALS = "special://profile/addon_data/%s/manuals/" % ADDON_ID
 POSITIONS = "special://profile/addon_data/%s/positions.json" % ADDON_ID
+DOWNLOADED = "special://profile/addon_data/%s/downloaded.json" % ADDON_ID
 
 
 def localize(string_id):
@@ -51,6 +53,17 @@ def write_text(path, text):
     xbmcvfs.mkdirs(manuals.folder_of(xbmcvfs.translatePath(path)))
     with xbmcvfs.File(path, "w") as f:
         f.write(text)
+
+
+def downloads():
+    return budget.Budget(DOWNLOADED, read_text, write_text)
+
+
+def keep_within_budget(store, keep):
+    """Delete downloaded manuals, least recently read first, down to the chosen space."""
+    limit = ADDON.getSettingInt("budget") * budget.MEGABYTE
+    for manual in store.enforce(limit, keep, xbmcvfs.exists, xbmcvfs.delete):
+        log("Deleted \"%s\" to stay within the space for downloaded manuals" % manual)
 
 
 def locate(game):
@@ -103,6 +116,10 @@ def run(args):
         log("No pages in \"%s\"" % manual, xbmc.LOGERROR)
         xbmcgui.Dialog().notification(localize(32000), localize(32011), xbmcgui.NOTIFICATION_ERROR)
         return
+
+    downloaded = downloads()
+    downloaded.opened(manual, time.time())
+    keep_within_budget(downloaded, manual)
 
     store = positions.Positions(POSITIONS, read_text, write_text)
     viewer = Viewer("script-game-manuals-viewer.xml", ADDON_PATH, "Default", "1080i",
