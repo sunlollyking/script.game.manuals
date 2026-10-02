@@ -2,8 +2,9 @@
 """The manual itself, a page at a time.
 
 While a page is shown whole the arrows turn pages; zoomed in they move around
-it, as Kodi's picture viewer does. The triggers zoom, Select toggles between
-the whole page and a close look, and the manual reopens where it was left.
+it, as Kodi's picture viewer does. The shoulder buttons turn pages too, Select
+toggles between the whole page and a close look, and the manual reopens where
+it was left.
 """
 
 import xbmcgui
@@ -93,13 +94,15 @@ class Viewer(xbmcgui.WindowXMLDialog):
                 moved = self.view.pan(step, 0)
         elif action_id in (UP, DOWN):
             moved = self.view.pan(0, -1 if action_id == UP else 1)
-        elif action_id in (PAGE_UP, PREV_ITEM):
+        elif action_id in (PAGE_UP, PREV_ITEM, SCROLL_UP):
             self.turn(-1)
-        elif action_id in (PAGE_DOWN, NEXT_ITEM):
+        elif action_id in (PAGE_DOWN, NEXT_ITEM, SCROLL_DOWN):
+            # Kodi's gamepad keymap sends Scroll from the bumpers and the
+            # triggers alike, so both turn pages
             self.turn(1)
-        elif action_id in (ZOOM_IN, WHEEL_UP, SCROLL_DOWN):
+        elif action_id in (ZOOM_IN, WHEEL_UP):
             moved = self.view.step(1)
-        elif action_id in (ZOOM_OUT, WHEEL_DOWN, SCROLL_UP):
+        elif action_id in (ZOOM_OUT, WHEEL_DOWN):
             moved = self.view.step(-1)
         elif action_id == SELECT:
             moved = self.view.whole() if not self.view.is_whole else self.view.step(2)

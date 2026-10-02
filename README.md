@@ -43,9 +43,9 @@ is one.
 |---|---|---|
 | Left / right | Turn the page | Move around it |
 | Up / down | | Move around it |
-| Triggers, mouse wheel | Zoom | Zoom |
+| Bumpers, triggers, page up / down | Turn the page | Turn the page |
 | Select | Zoom in | Back to the whole page |
-| Page up / down | Turn the page | Turn the page |
+| Mouse wheel, zoom keys | Zoom | Zoom |
 
 Each manual reopens at the page it was left on.
 

@@ -65,7 +65,7 @@ msgid "Couldn't open the manual"
 msgstr ""
 
 msgctxt "#32012"
-msgid "Zoom with the triggers, move with the arrows"
+msgid "Select to zoom in, the bumpers turn the page"
 msgstr ""
 
 msgctxt "#32013"
