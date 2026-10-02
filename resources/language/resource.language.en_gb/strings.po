@@ -57,7 +57,7 @@ msgid "Provider"
 msgstr ""
 
 msgctxt "#32010"
-msgid "Choose a manual to download it"
+msgid "Select to download this manual"
 msgstr ""
 
 msgctxt "#32011"
@@ -66,4 +66,56 @@ msgstr ""
 
 msgctxt "#32012"
 msgid "Zoom with the triggers, move with the arrows"
+msgstr ""
+
+msgctxt "#32013"
+msgid "Try another provider, or get more"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Asking"
+msgstr ""
+
+msgctxt "#32015"
+msgid "System"
+msgstr ""
+
+msgctxt "#32016"
+msgid "Region"
+msgstr ""
+
+msgctxt "#32017"
+msgid "Year"
+msgstr ""
+
+msgctxt "#32018"
+msgid "Publisher"
+msgstr ""
+
+msgctxt "#32019"
+msgid "Developer"
+msgstr ""
+
+msgctxt "#32020"
+msgid "Genre"
+msgstr ""
+
+msgctxt "#32021"
+msgid "Size"
+msgstr ""
+
+msgctxt "#32022"
+msgid "Ask another"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Asking {0} for a manual..."
+msgstr ""
+
+msgctxt "#32024"
+msgid "Manuals are found by add-ons, the way subtitles are"
+msgstr ""
+
+msgctxt "#32025"
+msgid "Check the connection and try again"
 msgstr ""
