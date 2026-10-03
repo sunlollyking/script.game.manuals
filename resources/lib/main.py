@@ -11,9 +11,9 @@ import xbmcvfs
 
 from . import budget, manuals, pages, positions
 
-ADDON = xbmcaddon.Addon()
-ADDON_ID = ADDON.getAddonInfo("id")
-ADDON_PATH = ADDON.getAddonInfo("path")
+# An Addon object kept past the script's end is reported as a leak by Kodi
+ADDON_ID = xbmcaddon.Addon().getAddonInfo("id")
+ADDON_PATH = xbmcaddon.Addon().getAddonInfo("path")
 #: Where a manual goes when there is nowhere beside the game to put it
 PROFILE_MANUALS = "special://profile/addon_data/%s/manuals/" % ADDON_ID
 POSITIONS = "special://profile/addon_data/%s/positions.json" % ADDON_ID
@@ -21,7 +21,7 @@ DOWNLOADED = "special://profile/addon_data/%s/downloaded.json" % ADDON_ID
 
 
 def localize(string_id):
-    return ADDON.getLocalizedString(string_id)
+    return xbmcaddon.Addon().getLocalizedString(string_id)
 
 
 def log(message, level=xbmc.LOGINFO):
@@ -61,7 +61,7 @@ def downloads():
 
 def keep_within_budget(store, keep):
     """Delete downloaded manuals, least recently read first, down to the chosen space."""
-    limit = ADDON.getSettingInt("budget") * budget.MEGABYTE
+    limit = xbmcaddon.Addon().getSettingInt("budget") * budget.MEGABYTE
     for manual in store.enforce(limit, keep, xbmcvfs.exists, xbmcvfs.delete):
         log("Deleted \"%s\" to stay within the space for downloaded manuals" % manual)
 
