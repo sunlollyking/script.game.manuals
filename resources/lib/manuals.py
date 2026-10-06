@@ -22,6 +22,11 @@ EXTENSIONS = (".pdf", ".cbz", ".cbr")
 #: a different folder.
 SUBFOLDERS = ("manuals", "Manuals")
 
+#: What opens and closes a tag in a file name; PC-8801 sets put a game's
+#: start-up settings in braces, as in "177 {V1 mode}.d88"
+OPENERS = "([{"
+CLOSERS = ")]}"
+
 #: Protocols that address something other than a folder of files, so a game
 #: reached through one has nowhere for a manual to sit beside it
 NO_FOLDER = ("http://", "https://", "zip://", "rar://", "archive://", "pdf://", "plugin://")
@@ -73,10 +78,10 @@ def normalise(name):
     depth = 0
     kept = []
     for c in name:
-        if c in "([":
+        if c in OPENERS:
             depth += 1
             kept.append(" ")
-        elif c in ")]":
+        elif c in CLOSERS:
             depth = max(depth - 1, 0)
             kept.append(" ")
         elif depth == 0:
@@ -94,9 +99,9 @@ def display_title(game_path):
     depth = 0
     kept = []
     for c in stem:
-        if c in "([":
+        if c in OPENERS:
             depth += 1
-        elif c in ")]":
+        elif c in CLOSERS:
             depth = max(depth - 1, 0)
         elif depth == 0:
             kept.append(c)

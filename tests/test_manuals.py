@@ -54,6 +54,10 @@ class Normalise(unittest.TestCase):
                          manuals.normalise("Sonic The Hedgehog 2"))
         self.assertEqual(manuals.normalise("Zelda (Europe) [!]"), manuals.normalise("Zelda"))
 
+    def test_braced_tags_are_dropped(self):
+        self.assertEqual(manuals.normalise("Demon's Ring (Disk A) {V1 mode}"),
+                         manuals.normalise("Demon's Ring (manual)"))
+
     def test_case_and_punctuation_are_ignored(self):
         self.assertEqual(manuals.normalise("Mega Man X2 - The Sequel!"),
                          manuals.normalise("mega man x2 the sequel"))
@@ -105,6 +109,7 @@ class DisplayTitle(unittest.TestCase):
     def test_the_tags_go(self):
         self.assertEqual(manuals.display_title("/g/Super Mario Bros. (USA, Europe).nes"), "Super Mario Bros.")
         self.assertEqual(manuals.display_title("/g/Zelda (Europe) [!].nes"), "Zelda")
+        self.assertEqual(manuals.display_title("/g/177 {V1 mode}.d88"), "177")
 
     def test_a_name_that_is_all_tags_is_kept(self):
         self.assertEqual(manuals.display_title("/g/(Proto).nes"), "(Proto)")
