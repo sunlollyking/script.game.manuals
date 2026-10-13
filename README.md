@@ -27,14 +27,14 @@ which this depends on; comic archives through Kodi's own zip and rar support.
 ## Finding one
 
 A game with no manual opens a search. A manual provider is an ordinary plugin
-that lists `manuals` among what it provides, and is called the way Kodi calls
+whose id starts with `plugin.game.manuals.`, and is called the way Kodi calls
 a subtitle service:
 
     plugin://<provider>/?action=search&path=<game>&title=<name>
 
 Each result's path is the manual, which is downloaded into the `manuals` folder
 beside the game, or into this add-on's profile folder when that can't be
-written to. [service.manuals.regvault](https://github.com/sunlollyking/service.manuals.regvault)
+written to. [plugin.game.manuals.regvault](https://github.com/sunlollyking/plugin.game.manuals.regvault)
 is one.
 
 ## Reading

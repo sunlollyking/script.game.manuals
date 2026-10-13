@@ -7,32 +7,20 @@ with a directory listing for an answer:
   plugin://<provider>/?action=search&path=<game>&title=<name>
 
 Each result's path is the manual itself, to be copied wherever it is wanted.
-A plugin says it is one by listing "manuals" among what it provides.
+A plugin is one when its id starts with plugin.game.manuals., the way a
+subtitle service's starts with service.subtitles.
 """
 
-import xml.etree.ElementTree as ET
 from urllib.parse import urlencode
 
 from . import manuals
 
-PROVIDES = "manuals"
+PREFIX = "plugin.game.manuals."
 
 
-def provides_manuals(addon_xml):
-    """Whether an add-on's addon.xml marks it as a manual provider."""
-    try:
-        root = ET.fromstring(addon_xml)
-    except ET.ParseError:
-        return False
-    for extension in root.iter("extension"):
-        if extension.get("point") != "xbmc.python.pluginsource":
-            continue
-        tokens = (extension.get("provides") or "").split()
-        for provides in extension.iter("provides"):
-            tokens += (provides.text or "").split()
-        if PROVIDES in tokens:
-            return True
-    return False
+def is_provider(addon_id):
+    """Whether an add-on is a manual provider, going by its id."""
+    return addon_id.startswith(PREFIX)
 
 
 def search_url(addon_id, game_path, title=""):

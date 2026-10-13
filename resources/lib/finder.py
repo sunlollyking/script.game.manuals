@@ -10,9 +10,8 @@ import threading
 
 import xbmc
 import xbmcgui
-import xbmcvfs
 
-from . import fetch, manuals, providers
+from . import fetch, providers
 from .main import jsonrpc, localize
 
 RESULTS = 200
@@ -27,16 +26,10 @@ def find_providers():
     """The installed add-ons that find manuals, as (id, name, icon)."""
     found = []
     answer = jsonrpc("Addons.GetAddons", {"type": "xbmc.python.pluginsource", "enabled": True,
-                                          "properties": ["name", "path", "thumbnail"]})
+                                          "properties": ["name", "thumbnail"]})
     for addon in answer.get("addons") or []:
-        manifest = manuals.join(addon.get("path") or "", "addon.xml")
-        try:
-            with xbmcvfs.File(manifest) as f:
-                text = f.read()
-        except Exception:
-            continue
-        if providers.provides_manuals(text):
-            addon_id = addon["addonid"]
+        addon_id = addon["addonid"]
+        if providers.is_provider(addon_id):
             found.append((addon_id, addon.get("name") or addon_id, addon.get("thumbnail") or ""))
     return found
 
