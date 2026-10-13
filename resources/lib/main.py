@@ -29,8 +29,12 @@ def log(message, level=xbmc.LOGINFO):
 
 
 def jsonrpc(method, params):
+    """A JSON-RPC call's result, or None if Kodi answered with an error."""
     answer = json.loads(xbmc.executeJSONRPC(json.dumps(
         {"jsonrpc": "2.0", "id": 1, "method": method, "params": params})))
+    if "error" in answer:
+        log("%s failed: %s" % (method, answer["error"]), xbmc.LOGERROR)
+        return None
     return answer.get("result") or {}
 
 
@@ -59,10 +63,14 @@ def downloads():
     return budget.Budget(DOWNLOADED, read_text, write_text)
 
 
+def budget_bytes():
+    """The space chosen for downloaded manuals."""
+    return xbmcaddon.Addon().getSettingInt("budget") * budget.MEGABYTE
+
+
 def keep_within_budget(store, keep):
     """Delete downloaded manuals, least recently read first, down to the chosen space."""
-    limit = xbmcaddon.Addon().getSettingInt("budget") * budget.MEGABYTE
-    for manual in store.enforce(limit, keep, xbmcvfs.exists, xbmcvfs.delete):
+    for manual in store.enforce(budget_bytes(), keep, xbmcvfs.exists, xbmcvfs.delete):
         log("Deleted \"%s\" to stay within the space for downloaded manuals" % manual)
 
 
@@ -72,7 +80,7 @@ def locate(game):
     if found:
         return found
     for extension in manuals.EXTENSIONS:
-        kept = manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + extension)
+        kept = manuals.join(PROFILE_MANUALS, manuals.profile_name(game, extension))
         if xbmcvfs.exists(kept):
             return kept
     return ""

@@ -53,6 +53,23 @@ def picture_size(header):
         return width, abs(height)
     if header[:2] == b"\xff\xd8":
         return _jpeg_size(header)
+    if header[:4] == b"RIFF" and header[8:12] == b"WEBP" and len(header) >= 30:
+        return _webp_size(header)
+    return None
+
+
+def _webp_size(data):
+    chunk = data[12:16]
+    if chunk == b"VP8 " and data[23:26] == b"\x9d\x01\x2a":
+        width, height = struct.unpack("<HH", data[26:30])
+        return width & 0x3FFF, height & 0x3FFF
+    if chunk == b"VP8L" and data[20:21] == b"\x2f":
+        bits = struct.unpack("<I", data[21:25])[0]
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if chunk == b"VP8X":
+        width = int.from_bytes(data[24:27], "little") + 1
+        height = int.from_bytes(data[27:30], "little") + 1
+        return width, height
     return None
 
 

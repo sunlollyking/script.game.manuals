@@ -74,6 +74,10 @@ class Normalise(unittest.TestCase):
     def test_an_empty_name_stays_empty(self):
         self.assertEqual(manuals.normalise(""), "")
 
+    def test_names_in_other_scripts_are_kept(self):
+        self.assertEqual(manuals.normalise("ドラゴンクエスト (Japan)"), "ドラゴンクエスト")
+        self.assertNotEqual(manuals.normalise("ドラゴンクエスト2"), manuals.normalise("ファイナルファンタジー2"))
+
 
 class Find(unittest.TestCase):
     def test_a_manual_beside_the_game(self):
@@ -155,6 +159,16 @@ class DownloadTarget(unittest.TestCase):
     def test_a_comic_archive_keeps_its_extension(self):
         self.assertEqual(manuals.download_target(GAME, set(), ".cbz"),
                          "/games/Mega Drive/manuals/Sonic The Hedgehog 2 (World) (Rev A).cbz")
+
+
+class ProfileName(unittest.TestCase):
+    def test_games_with_one_name_keep_their_own_manuals(self):
+        self.assertNotEqual(manuals.profile_name("/games/NES/Aladdin.nes"),
+                            manuals.profile_name("/games/SNES/Aladdin.sfc"))
+
+    def test_it_reads_as_the_game(self):
+        self.assertTrue(manuals.profile_name("/games/NES/Aladdin.nes", ".cbz").startswith("Aladdin_"))
+        self.assertTrue(manuals.profile_name("/games/NES/Aladdin.nes", ".cbz").endswith(".cbz"))
 
 
 class FetchedExtension(unittest.TestCase):

@@ -26,7 +26,7 @@ def find_providers():
     """The installed add-ons that find manuals, as (id, name, icon)."""
     found = []
     answer = jsonrpc("Addons.GetAddons", {"type": "xbmc.python.pluginsource", "enabled": True,
-                                          "properties": ["name", "thumbnail"]})
+                                          "properties": ["name", "thumbnail"]}) or {}
     for addon in answer.get("addons") or []:
         addon_id = addon["addonid"]
         if providers.is_provider(addon_id):
@@ -42,6 +42,7 @@ class Finder(xbmcgui.WindowXMLDialog):
         self.downloaded = ""
         self.providers = []
         self.provider = 0
+        self.searches = 0
         self.busy = False
 
     def onInit(self):
@@ -65,12 +66,20 @@ class Finder(xbmcgui.WindowXMLDialog):
         self.setProperty("provider.icon", icon)
         self.set_state("searching", localize(32023).format(name))
         self.getControl(RESULTS).reset()
-        threading.Thread(target=self._search, args=(addon_id,)).start()
+        self.searches += 1
+        threading.Thread(target=self._search, args=(addon_id, name, self.searches)).start()
 
-    def _search(self, addon_id):
+    def _search(self, addon_id, name, search):
         url = providers.search_url(addon_id, self.game, self.title)
         answer = jsonrpc("Files.GetDirectory", {"directory": url, "media": "files",
                                                 "properties": ["title", "art", "customproperties"]})
+        # Another provider was asked while this one was answering
+        if search != self.searches:
+            return
+        if answer is None:
+            self.set_state("failed", localize(32026).format(name), localize(32013))
+            self.setFocusId(PROVIDER if len(self.providers) > 1 else MORE)
+            return
         items = []
         for result in answer.get("files") or []:
             item = xbmcgui.ListItem(result.get("label") or result.get("title") or "")

@@ -49,7 +49,6 @@ class Viewer(xbmcgui.WindowXMLDialog):
         self.origin = (0, 0)
         self.picture = b""
         self.shown = ""
-        self.written = set()
 
     def onInit(self):
         self.setProperty("title", self.title)
@@ -87,18 +86,19 @@ class Viewer(xbmcgui.WindowXMLDialog):
         name = "%s%04d-%d%s" % (SHOWN, self.index, self.view.zoom, extension)
         if name == self.shown:
             return
-        if name not in self.written:
-            with xbmcvfs.File(name, "w") as f:
-                f.write(self.picture)
-            self.written.add(name)
+        with xbmcvfs.File(name, "w") as f:
+            f.write(self.picture)
         self.image.setImage(name, False)
+        # Only the page on screen is kept, so a long manual doesn't fill the temp folder
+        if self.shown:
+            xbmcvfs.delete(self.shown)
         self.shown = name
 
     def close(self):
         super(Viewer, self).close()
-        for name in self.written:
-            xbmcvfs.delete(name)
-        self.written.clear()
+        if self.shown:
+            xbmcvfs.delete(self.shown)
+            self.shown = ""
 
     def turn(self, pages_on):
         index = min(max(self.index + pages_on, 0), len(self.paths) - 1)

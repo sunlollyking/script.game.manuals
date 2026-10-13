@@ -7,7 +7,7 @@ import xbmc
 import xbmcvfs
 
 from . import manuals
-from .main import ADDON_ID, PROFILE_MANUALS, downloads, log
+from .main import ADDON_ID, PROFILE_MANUALS, budget_bytes, downloads, log
 
 CHUNK = 256 * 1024
 
@@ -40,7 +40,7 @@ def target_for(game, extension):
             return beside
         log("\"%s\" can't be written to; keeping the manual in the profile" % folder)
     xbmcvfs.mkdirs(PROFILE_MANUALS)
-    return manuals.join(PROFILE_MANUALS, manuals.stem_of(game) + extension)
+    return manuals.join(PROFILE_MANUALS, manuals.profile_name(game, extension))
 
 
 def download(url, game, progress):
@@ -48,17 +48,24 @@ def download(url, game, progress):
 
     progress(share) is told how far it has got, from 0 to 1. The file is
     written under another name until it is whole, so a failed download never
-    leaves something that looks like a manual.
+    leaves something that looks like a manual. Nothing bigger than the space
+    chosen for downloaded manuals is kept, whatever size the server gave.
     """
     target = target_for(game, manuals.fetched_extension(url))
     partial = target + ".part"
+    limit = budget_bytes()
     copied = 0
     done = False
     try:
         source = xbmcvfs.File(url)
         size = source.size()
+        if size > limit:
+            source.close()
+            log("The manual is %d MB, more than the space for downloaded manuals" % (size // (1024 * 1024)),
+                xbmc.LOGERROR)
+            return ""
         with xbmcvfs.File(partial, "w") as out:
-            while True:
+            while copied <= limit:
                 data = source.readBytes(CHUNK)
                 if not data:
                     break
@@ -67,7 +74,8 @@ def download(url, game, progress):
                 if size > 0:
                     progress(float(copied) / size)
         source.close()
-        done = copied > 0 and (size <= 0 or copied == size) and xbmcvfs.rename(partial, target)
+        done = (0 < copied <= limit and (size <= 0 or copied == size)
+                and xbmcvfs.rename(partial, target))
     except Exception as error:
         log("Fetching the manual failed: %s" % error, xbmc.LOGERROR)
     if not done:

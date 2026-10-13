@@ -50,6 +50,15 @@ class PictureSize(unittest.TestCase):
         Image.new("RGB", (123, 45)).save(out, "JPEG")
         self.assertEqual(pages.picture_size(out.getvalue()), (123, 45))
 
+    def test_webp_in_each_of_its_forms(self):
+        # The first bytes of a 300 x 500 picture saved lossy, lossless, and
+        # lossy with transparency, by Pillow
+        lossy = b"RIFF^\x01\x00\x00WEBPVP8 R\x01\x00\x00p$\x00\x9d\x01*,\x01\xf4\x01>m"
+        lossless = b"RIFF*\x00\x00\x00WEBPVP8L\x1d\x00\x00\x00/+\xc1|\x00\x07P\xb2\"W\xa6\xff"
+        extended = b"RIFF\x90\x01\x00\x00WEBPVP8X\n\x00\x00\x00\x10\x00\x00\x00+\x01\x00\xf3\x01\x00AL"
+        for header in (lossy, lossless, extended):
+            self.assertEqual(pages.picture_size(header), (300, 500))
+
     def test_something_else(self):
         self.assertIsNone(pages.picture_size(b"not a picture"))
 

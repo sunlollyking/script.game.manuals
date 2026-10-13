@@ -12,6 +12,7 @@ the caller's job, passed in, so this can be tested without Kodi.
 """
 
 import re
+import zlib
 
 #: Preferred first: a PDF is one file with real pages, where a comic archive is
 #: a bag of images ordered by name
@@ -86,7 +87,7 @@ def normalise(name):
             kept.append(" ")
         elif depth == 0:
             kept.append(c)
-    return " ".join(re.findall(r"[0-9a-z]+", "".join(kept).lower()))
+    return " ".join(re.findall(r"[^\W_]+", "".join(kept).lower()))
 
 
 def display_title(game_path):
@@ -182,6 +183,12 @@ def fetched_extension(url):
     """The extension a manual fetched from this address is saved with."""
     extension = extension_of(url.split("?", 1)[0].split("#", 1)[0])
     return extension if extension in EXTENSIONS else ".pdf"
+
+
+def profile_name(game_path, extension=".pdf"):
+    """What a game's manual is called in the profile, where games from every
+    folder share one, so two games with one name don't share a manual."""
+    return "%s_%08x%s" % (stem_of(game_path), zlib.crc32(game_path.encode("utf-8")), extension)
 
 
 def download_target(game_path, existing_folders, extension=".pdf"):

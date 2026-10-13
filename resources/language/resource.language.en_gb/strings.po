@@ -120,6 +120,10 @@ msgctxt "#32025"
 msgid "Check the connection and try again"
 msgstr ""
 
+msgctxt "#32026"
+msgid "Couldn't ask {0}"
+msgstr ""
+
 msgctxt "#32030"
 msgid "Downloaded manuals"
 msgstr ""
