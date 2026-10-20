@@ -155,3 +155,15 @@ msgstr ""
 msgctxt "#32037"
 msgid "2 GB"
 msgstr ""
+
+msgctxt "#32038"
+msgid "This manual needs PDF support"
+msgstr ""
+
+msgctxt "#32039"
+msgid "No add-on that finds manuals is enabled"
+msgstr ""
+
+msgctxt "#32040"
+msgid "This manual needs RAR support"
+msgstr ""

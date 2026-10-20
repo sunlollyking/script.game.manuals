@@ -22,16 +22,24 @@ BAR_TRACK = 400
 BAR_FILL = 410
 
 
-def find_providers():
+def find_providers(enabled=True):
     """The installed add-ons that find manuals, as (id, name, icon)."""
     found = []
-    answer = jsonrpc("Addons.GetAddons", {"type": "xbmc.python.pluginsource", "enabled": True,
+    answer = jsonrpc("Addons.GetAddons", {"type": "xbmc.python.pluginsource", "enabled": enabled,
                                           "properties": ["name", "thumbnail"]}) or {}
     for addon in answer.get("addons") or []:
         addon_id = addon["addonid"]
         if providers.is_provider(addon_id):
             found.append((addon_id, addon.get("name") or addon_id, addon.get("thumbnail") or ""))
     return found
+
+
+def offer_disabled_provider():
+    """Offer to enable a provider that is installed but disabled, when none is enabled."""
+    if find_providers():
+        return
+    for addon_id, _, _ in find_providers(enabled=False)[:1]:
+        xbmc.executebuiltin("EnableAddon(%s)" % addon_id, True)
 
 
 class Finder(xbmcgui.WindowXMLDialog):
@@ -50,7 +58,8 @@ class Finder(xbmcgui.WindowXMLDialog):
         self.providers = find_providers()
         self.setProperty("providers", str(len(self.providers)))
         if not self.providers:
-            self.set_state("noproviders", localize(32005), localize(32024))
+            status = 32039 if find_providers(enabled=False) else 32005
+            self.set_state("noproviders", localize(status), localize(32024))
             self.setFocusId(MORE)
             return
         self.search()
@@ -107,6 +116,9 @@ class Finder(xbmcgui.WindowXMLDialog):
             self.search()
         elif control_id == MORE:
             self.close()
+            # Kodi won't open a window over a dialog, such as the menu of the
+            # game being played
+            xbmc.executebuiltin("Dialog.Close(all,true)", True)
             xbmc.executebuiltin("ActivateWindow(addonbrowser,addons://search/manuals/,return)")
         elif control_id == CANCEL:
             self.close()

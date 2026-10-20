@@ -18,6 +18,8 @@ ADDON_PATH = xbmcaddon.Addon().getAddonInfo("path")
 PROFILE_MANUALS = "special://profile/addon_data/%s/manuals/" % ADDON_ID
 POSITIONS = "special://profile/addon_data/%s/positions.json" % ADDON_ID
 DOWNLOADED = "special://profile/addon_data/%s/downloaded.json" % ADDON_ID
+#: What a player is told when the add-on that reads a kind of manual can't be had
+READER_MISSING = {"vfs.pdf": 32038, "vfs.rar": 32040}
 
 
 def localize(string_id):
@@ -101,6 +103,24 @@ def page_paths(manual):
     return [folder + name for name in pages.ordered_pictures(names)]
 
 
+def reader_ready(manual):
+    """Whether the add-on that reads this kind of manual is enabled, offering to
+    install or enable it when it isn't."""
+    addon_id = pages.reader_addon(manual)
+    enabled = "System.AddonIsEnabled(%s)" % addon_id
+    if not addon_id or xbmc.getCondVisibility(enabled):
+        return True
+    if xbmc.getCondVisibility("System.HasAddon(%s)" % addon_id):
+        xbmc.executebuiltin("EnableAddon(%s)" % addon_id, True)
+    else:
+        xbmc.executebuiltin("InstallAddon(%s)" % addon_id, True)
+    if xbmc.getCondVisibility(enabled):
+        return True
+    xbmcgui.Dialog().notification(localize(32000), localize(READER_MISSING[addon_id]),
+                                  xbmcgui.NOTIFICATION_ERROR)
+    return False
+
+
 def fetch_with_progress(url, game):
     from . import fetch
 
@@ -113,7 +133,7 @@ def fetch_with_progress(url, game):
 
 
 def run(args):
-    from .finder import Finder
+    from .finder import Finder, offer_disabled_provider
     from .viewer import Viewer
 
     arguments = manuals.parse_args(args)
@@ -135,6 +155,7 @@ def run(args):
     if not manual:
         if not game:
             return
+        offer_disabled_provider()
         finder = Finder("script-game-manuals-finder.xml", ADDON_PATH, "Default", "1080i", game=game,
                         title=title)
         finder.doModal()
@@ -142,6 +163,9 @@ def run(args):
         del finder
         if not manual:
             return
+
+    if not reader_ready(manual):
+        return
 
     paths = page_paths(manual)
     if not paths:

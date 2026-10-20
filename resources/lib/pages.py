@@ -14,6 +14,8 @@ PICTURES = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp")
 
 #: The folder Kodi shows each kind of manual's pages through
 PROTOCOLS = {".pdf": "pdf", ".cbz": "zip", ".cbr": "rar"}
+#: The add-ons that provide those folders, where Kodi has none of its own
+PROTOCOL_ADDONS = {"pdf": "vfs.pdf", "rar": "vfs.rar"}
 
 
 def pages_folder(manual_path):
@@ -26,6 +28,13 @@ def pages_folder(manual_path):
     # Kodi writes the escapes in lower case
     encoded = re.sub(r"%[0-9A-F]{2}", lambda m: m.group(0).lower(), quote(manual_path, safe="-_.!()"))
     return "%s://%s/" % (protocol, encoded)
+
+
+def reader_addon(manual_path):
+    """The add-on a manual's pages are read through, or "" when Kodi reads them itself."""
+    dot = manual_path.rfind(".")
+    protocol = PROTOCOLS.get(manual_path[dot:].lower()) if dot > 0 else None
+    return PROTOCOL_ADDONS.get(protocol, "")
 
 
 def natural_key(name):

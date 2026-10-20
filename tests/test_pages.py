@@ -25,6 +25,16 @@ class PagesFolder(unittest.TestCase):
         self.assertEqual(pages.pages_folder("/m/a.txt"), "")
 
 
+class ReaderAddon(unittest.TestCase):
+    def test_pdfs_and_rar_archives_are_read_through_an_add_on(self):
+        self.assertEqual(pages.reader_addon("/m/a.PDF"), "vfs.pdf")
+        self.assertEqual(pages.reader_addon("/m/a.cbr"), "vfs.rar")
+
+    def test_zip_archives_are_read_by_kodi_itself(self):
+        self.assertEqual(pages.reader_addon("/m/a.cbz"), "")
+        self.assertEqual(pages.reader_addon("/m/a.txt"), "")
+
+
 class Order(unittest.TestCase):
     def test_pictures_in_the_order_a_person_numbers_them(self):
         names = ["page10.jpg", "page2.jpg", "notes.txt", "page1.PNG", "Thumbs.db"]
