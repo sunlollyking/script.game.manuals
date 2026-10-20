@@ -32,7 +32,8 @@ class IsProvider(unittest.TestCase):
 
 class SearchUrl(unittest.TestCase):
     def test_the_path_and_title_are_handed_over(self):
-        url = providers.search_url("plugin.game.manuals.regvault", "/games/Super Mario Bros. (USA, Europe).nes")
+        url = providers.search_url("plugin.game.manuals.regvault",
+                                   "/games/Super Mario Bros. (USA, Europe).nes")
         parts = urlsplit(url)
         self.assertEqual((parts.scheme, parts.netloc), ("plugin", "plugin.game.manuals.regvault"))
         self.assertEqual(parse_qs(parts.query), {"action": ["search"],
