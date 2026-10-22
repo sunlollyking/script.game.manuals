@@ -23,6 +23,9 @@ class IsProvider(unittest.TestCase):
         self.assertFalse(providers.is_provider("plugin.program.iagl"))
         self.assertFalse(providers.is_provider("plugin.game.manuals"))
 
+    def test_the_providers_offered_are_providers(self):
+        self.assertTrue(all(providers.is_provider(addon_id) for addon_id in providers.KNOWN))
+
     def test_regvault_is_one(self):
         if not os.path.exists(REGVAULT):
             self.skipTest("plugin.game.manuals.regvault is not checked out beside this")
