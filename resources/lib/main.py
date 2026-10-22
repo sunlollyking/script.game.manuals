@@ -115,6 +115,11 @@ def reader_ready(manual):
     else:
         xbmc.executebuiltin("InstallAddon(%s)" % addon_id, True)
     if xbmc.getCondVisibility(enabled):
+        # Kodi loads the add-on in the background, so the pages show up a moment later
+        monitor = xbmc.Monitor()
+        for _ in range(20):
+            if page_paths(manual) or monitor.waitForAbort(0.25):
+                break
         return True
     xbmcgui.Dialog().notification(localize(32000), localize(READER_MISSING[addon_id]),
                                   xbmcgui.NOTIFICATION_ERROR)
